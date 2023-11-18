@@ -1,0 +1,366 @@
+openapi: 3.0.0
+info:
+  title: Doctor Appointment API
+  description: API for managing Doctor Appointment
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081
+paths:
+  /doctor-appointment:
+    get:
+      summary: Get all doctor appointment
+      responses:
+        '200':
+          description: A list of doctor appointment
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DoctorAppointmentList'
+    post:
+      summary: Add a new doctor appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorAppointmentInput'
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+    delete:
+      summary: Delete all doctor appointments
+      responses:
+        '204':
+          description: All doctor appointments are deleted successfully
+    put:
+      summary: Update all doctor appointments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorAppointmentList'
+      responses:
+        '200':
+          description: All doctor appointments are updated successfully
+  /doctor-appointment/{appointmentId}:
+    parameters:
+      - name: appointmentId
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a doctor appointment by ID
+      responses:
+        '200':
+          description: The doctor appointment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoctorAppointment'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Doctor appointment not found
+    put:
+      summary: Update a doctor appointment by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DoctorAppointmentInput'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete a doctor appointment by ID
+      responses:
+        '204':
+          description: The doctor appointment is deleted successfully
+        '404':
+          description: Not Found
+  /doctor-appointment/search:
+    get:
+      summary: Search doctor appointment
+      parameters:
+        - name: id
+          in: query
+          description: doctor appointment provided by the id
+          schema:
+            type: string
+        - name: doctor
+          in: query
+          description: Doctor name
+          schema:
+            type: string
+        - name: patient
+          in: query
+          description: Patient name
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          description: Start date of the time period
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date of the time period
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: A list of doctor appointment matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DoctorAppointment'
+components:
+  schemas:
+    Doctor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Dr. Smith
+        specialty:
+          type: string
+          example: Cardiologist
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: John Doe
+        dob:
+          type: string
+          format: date
+          example: 1990-05-15
+    DoctorInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Dr. Smith
+        specialty:
+          type: string
+          example: Cardiologist
+    PatientInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        dob:
+          type: string
+          format: date
+          example: 1990-05-15
+    DoctorAppointment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        doctor:
+          $ref: '#/components/schemas/Doctor'
+        patient:
+          $ref: '#/components/schemas/Patient'
+        date:
+          type: string
+          format: date
+          example: 2023-11-20
+        time:
+          type: string
+          example: 10:00 AM
+        status:
+          type: string
+          description: Doctor appointment status
+          example: Scheduled
+          enum:
+          - Scheduled
+          - Completed
+          - Canceled
+          - Pending
+    DoctorAppointmentInput:
+      type: object
+      properties:
+        doctor:
+          $ref: '#/components/schemas/DoctorInput'
+        patient:
+          $ref: '#/components/schemas/PatientInput'
+        dob:
+          type: string
+          format: date
+          example: 1990-05-15
+        date:
+          type: string
+          format: date
+          example: 2023-11-20
+        time:
+          type: string
+          example: 10:00 AM
+        status:
+          type: string
+          description: Doctor appointment status
+          example: Scheduled
+          enum:
+          - Scheduled
+          - Completed
+          - Cancele
+          - Pending
+    DoctorAppointmentList:
+      type: array
+      items: 
+       $ref: '#/components/schemas/DoctorAppointment'
+      example:
+        - id: 101
+          doctor:
+            id: 1
+            name: Dr. Smith
+            specialty: Cardiologist
+          patient:
+            id: 1
+            name: John Doe
+            dob: 1990-05-15
+          date: 2023-11-20
+          time: 10:00 AM
+          status: Scheduled
+        
+        - id: 102
+          doctor:
+            id: 2
+            name: Dr. Johnson
+            specialty: Dermatologist
+          patient:
+            id: 2
+            name: Jane Smith
+            dob: 1985-08-22
+          date: 2023-11-21
+          time: 02:30 PM
+          status: Completed
+        
+        - id: 103
+          doctor:
+            id: 3
+            name: Dr. Brown
+            specialty: Pediatrician
+          patient:
+            id: 3
+            name: Samuel White
+            dob: 2010-03-10
+          date: 2023-11-22
+          time: 11:45 AM
+          status: Canceled
+        
+        - id: 104
+          doctor:
+            id: 4
+            name: Dr. Miller
+            specialty: Orthopedic
+          patient:
+            id: 4
+            name: Emily Davis
+            dob: 1975-12-03
+          date: 2023-11-23
+          time: 03:15 PM
+          status: Scheduled
+        
+        - id: 105
+          doctor:
+            id: 5
+            name: Dr. Anderson
+            specialty: Ophthalmologist
+          patient:
+            id: 5
+            name: Michael Johnson
+            dob: 1968-09-18
+          date: 2023-11-24
+          time: 09:30 AM
+          status: Pending
+        
+        - id: 106
+          doctor:
+            id: 6
+            name: Dr. White
+            specialty: Gynecologist
+          patient:
+            id: 6
+            name: Olivia Moore
+            dob: 1988-07-07
+          date: 2023-11-25
+          time: 01:00 PM
+          status: Scheduled
+        
+        - id: 107
+          doctor:
+            id: 7
+            name: Dr. Taylor
+            specialty: Neurologist
+          patient:
+            id: 7
+            name: William Johnson
+            dob: 1955-02-12
+          date: 2023-11-26
+          time: 11:00 AM
+          status: Completed
+        
+        - id: 108
+          doctor:
+            id: 8
+            name: Dr. Harris
+            specialty: Dentist
+          patient:
+            id: 8
+            name: Ava Martinez
+            dob: 1995-10-30
+          date: 2023-11-27
+          time: 03:45 PM
+          status: Scheduled
+        
+        - id: 109
+          doctor:
+            id: 9
+            name: Dr. Wilson
+            specialty: Urologist
+          patient:
+            id: 9
+            name: Ethan Taylor
+            dob: 1982-06-25
+          date: 2023-11-28
+          time: 10:30 AM
+          status: Pending
+        
+        - id: 110
+          doctor:
+            id: 10
+            name: Dr. Adams
+            specialty: Pulmonologist
+          patient:
+            id: 10
+            name: Sophia Turner
+            dob: 2000-04-17
+          date: 2023-11-29
+          time: 02:15 PM
+          status: Scheduled
+
